@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tugasteori1/app/modules/pemasukannull/controllers/pemasukannull_controller.dart';
-import 'package:tugasteori1/app/modules/pengeluarannull/views/pengeluarannull_views.dart';
+import 'package:tugasteori1/app/modules/pengeluarannull/views/pengeluarannull_view.dart';
 import 'package:tugasteori1/app/routes/app_routes.dart';
 
 class PemasukannullView extends StatefulWidget {
@@ -14,18 +14,26 @@ class _PemasukannullViewState extends State<PemasukannullView> {
 
   // Daftar halaman yang dapat dinavigasi di BottomNavigationBar
   final List<Widget> _pages = [
-    PemasukanMainView(),
+    PemasukannullMainView(),
     StatistikView(),
-    BeritaView(),
-    ProfilView(),
+    NewsView(),
+    ProfilnullView(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Update the selected index
+
+      // Navigate to Pemasukan when Home (index 0) is pressed
+      if (index == 0) {
+        Get.toNamed(AppRoutes.pemasukannull); // Change this route to your PemasukanView route
+      }
+      if (index == 2) {
+        Get.toNamed(AppRoutes.beritanull);
+      }
       // If the "Profil" tab is selected, navigate to ProfilView
       if (index == 3) {
-        Get.toNamed(AppRoutes.profile);
+        Get.toNamed(AppRoutes.profilenull);
       }
     });
   }
@@ -89,7 +97,7 @@ class _PemasukannullViewState extends State<PemasukannullView> {
 }
 
 // Halaman utama untuk pemasukan
-class PemasukanMainView extends StatelessWidget {
+class PemasukannullMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut<PemasukannullController>(() => PemasukannullController());
@@ -343,14 +351,14 @@ class StatistikView extends StatelessWidget {
   }
 }
 
-class BeritaView extends StatelessWidget {
+class NewsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Berita'));
   }
 }
 
-class ProfilView extends StatelessWidget {
+class ProfilnullView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Profil'));

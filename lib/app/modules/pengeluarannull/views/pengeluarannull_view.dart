@@ -14,18 +14,26 @@ class _PengeluarannullViewState extends State<PengeluarannullView> {
 
   // List of pages for bottom navigation
   final List<Widget> _pages = [
-    PengeluaranMainView(), // Halaman Pengeluaran
+    PengeluarannullMainView(), // Halaman Pengeluaran
     StatistikView(),       // Halaman Statistik
-    BeritaView(),          // Halaman Berita
-    ProfilView(),          // Halaman Profil
+    NewsView(),          // Halaman Berita
+    ProfilnullView(),          // Halaman Profil
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Update the selected index
+
+      // Navigate to Pemasukan when Home (index 0) is pressed
+      if (index == 0) {
+        Get.toNamed(AppRoutes.pengeluarannull); // Change this route to your PemasukanView route
+      }
+      if (index == 2) {
+        Get.toNamed(AppRoutes.beritanull);
+      }
       // If the "Profil" tab is selected, navigate to ProfilView
       if (index == 3) {
-        Get.toNamed(AppRoutes.profile);
+        Get.toNamed(AppRoutes.profilenull);
       }
     });
   }
@@ -92,7 +100,7 @@ class _PengeluarannullViewState extends State<PengeluarannullView> {
   }
 }
 
-class PengeluaranMainView extends StatelessWidget {
+class PengeluarannullMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut<PemasukannullController>(() => PemasukannullController());
@@ -339,14 +347,14 @@ class StatistikView extends StatelessWidget {
   }
 }
 
-class BeritaView extends StatelessWidget {
+class NewsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Berita'));
   }
 }
 
-class ProfilView extends StatelessWidget {
+class ProfilnullView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Profil'));

@@ -1,49 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tugasteori1/app/modules/profile/controllers/profile_controller.dart';
+import 'package:tugasteori1/app/modules/pemasukannull/views/pemasukannull_view.dart';
+import 'package:tugasteori1/app/modules/profilenull/controllers/profilenull_controller.dart';
 import 'package:tugasteori1/app/routes/app_routes.dart';
 
-class ProfileView extends StatefulWidget {
+class ProfilenullView extends StatefulWidget {
   @override
-  _ProfileViewState createState() => _ProfileViewState();
+  _ProfilenullViewState createState() => _ProfilenullViewState();
 }
 
-class _ProfileViewState extends State<ProfileView> {
-  int _selectedIndex = 3;
+class _ProfilenullViewState extends State<ProfilenullView> {
+  int _selectedIndex = 3; // Default untuk membuka halaman profil
 
-
+  // List of views to navigate between
   final List<Widget> _pages = [
-    PemasukanMainView(), // Halaman Home
-    StatistikView(),     // Halaman Statistik
+    PemasukannullMainView(),           // Halaman Home
+    StatistikView(),      // Halaman Statistik
     NewsView(),         // Halaman Berita
-    ProfileMainView(),  // Halaman Profil
+    ProfileMainView(),    // Halaman Profil
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedIndex = index; // Update the selected index
 
+      // Navigate to Pemasukan when Home (index 0) is pressed
       if (index == 0) {
-        Get.toNamed(AppRoutes.pemasukan);
+        Get.toNamed(AppRoutes.pemasukannull); // Change this route to your PemasukanView route
       }
       if (index == 2) {
-        Get.toNamed(AppRoutes.berita);
+        Get.toNamed(AppRoutes.beritanull);
       }
+      // If the "Profil" tab is selected, navigate to ProfilView
       if (index == 3) {
-        Get.toNamed(AppRoutes.profile);
+        Get.toNamed(AppRoutes.profilenull);
       }
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut<ProfileController>(() => ProfileController());
-    final controller = Get.find<ProfileController>();
-    final authController = Get.find<ProfileController>(); // Find AuthController
+    Get.lazyPut<ProfilenullController>(() => ProfilenullController());
+    final controller = Get.find<ProfilenullController>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profil", style: TextStyle(color: Colors.white)),
+        title: Text("Profil",
+          style: TextStyle(color: Colors.white), // Set warna teks menjadi putih
+        ),
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
@@ -57,6 +62,7 @@ class _ProfileViewState extends State<ProfileView> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               )),
               SizedBox(height: 20),
+              // Bagian Nama
               ListTile(
                 leading: Icon(Icons.person),
                 title: Text('Nama Panggilan'),
@@ -68,6 +74,7 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
               ),
+              // Bagian Email
               ListTile(
                 leading: Icon(Icons.email),
                 title: Text('Email'),
@@ -79,6 +86,7 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
               ),
+              // Bagian Bahasa
               ListTile(
                 leading: Icon(Icons.language),
                 title: Text('Bahasa'),
@@ -114,13 +122,6 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
               ),
-              ListTile(
-                leading: Icon(Icons.logout, color: Colors.red),
-                title: Text('Logout', style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  authController.logout();
-                },
-              )
             ],
           ),
         ),
@@ -153,7 +154,8 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEditNameBottomSheet(BuildContext context, ProfileController controller) {
+  // Fungsi untuk menampilkan pop-up dari bawah untuk edit nama
+  void _showEditNameBottomSheet(BuildContext context, ProfilenullController controller) {
     TextEditingController nameController = TextEditingController(text: controller.name.value);
 
     showModalBottomSheet(
@@ -225,7 +227,8 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEditEmailBottomSheet(BuildContext context, ProfileController controller) {
+  // Fungsi untuk menampilkan pop-up dari bawah untuk edit email
+  void _showEditEmailBottomSheet(BuildContext context, ProfilenullController controller) {
     TextEditingController emailController = TextEditingController(text: controller.email.value);
 
     showModalBottomSheet(
@@ -265,23 +268,23 @@ class _ProfileViewState extends State<ProfileView> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      controller.deleteEmail(); // Menghapus email
+                      controller.deleteEmail();
                       Get.back(); // Tutup bottom sheet setelah aksi
                     },
                     child: Text("Hapus"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Ubah warna tombol Hapus
+                      backgroundColor: Colors.blue,
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (emailController.text.isNotEmpty) {
+                      if (emailController.text.isNotEmpty && emailController.text.contains('@gmail.com')) {
                         controller.editEmail(emailController.text); // Memperbarui email
                         Get.back(); // Tutup bottom sheet setelah menyimpan
                       } else {
                         Get.snackbar(
                           "Error",
-                          "Email tidak boleh kosong!",
+                          "Email harus valid dan menggunakan @gmail.com!",
                           backgroundColor: Colors.blue,
                           colorText: Colors.white,
                         );
@@ -298,7 +301,8 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEditLanguageBottomSheet(BuildContext context, ProfileController controller) {
+  // Fungsi untuk menampilkan pop-up dari bawah untuk edit bahasa
+  void _showEditLanguageBottomSheet(BuildContext context, ProfilenullController controller) {
     TextEditingController languageController = TextEditingController(text: controller.language.value);
 
     showModalBottomSheet(
@@ -337,12 +341,12 @@ class _ProfileViewState extends State<ProfileView> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      controller.deleteLanguage(); // Menghapus bahasa
+                      controller.deleteLanguage();
                       Get.back(); // Tutup bottom sheet setelah aksi
                     },
                     child: Text("Hapus"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Ubah warna tombol Hapus
+                      backgroundColor: Colors.blue,
                     ),
                   ),
                   ElevatedButton(
@@ -370,7 +374,8 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEditPinBottomSheet(BuildContext context, ProfileController controller) {
+  // Fungsi untuk menampilkan pop-up dari bawah untuk edit PIN
+  void _showEditPinBottomSheet(BuildContext context, ProfilenullController controller) {
     TextEditingController pinController = TextEditingController(text: controller.pin.value);
 
     showModalBottomSheet(
@@ -398,11 +403,11 @@ class _ProfileViewState extends State<ProfileView> {
               SizedBox(height: 16.0),
               TextField(
                 controller: pinController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "PIN",
                   border: OutlineInputBorder(),
                 ),
-                obscureText: true,
               ),
               SizedBox(height: 16.0),
               Row(
@@ -410,23 +415,23 @@ class _ProfileViewState extends State<ProfileView> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      controller.deletePin(); // Menghapus PIN
+                      controller.deletePin();
                       Get.back(); // Tutup bottom sheet setelah aksi
                     },
                     child: Text("Hapus"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Ubah warna tombol Hapus
+                      backgroundColor: Colors.blue,
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (pinController.text.isNotEmpty) {
+                      if (pinController.text.length == 6) {
                         controller.editPin(pinController.text); // Memperbarui PIN
                         Get.back(); // Tutup bottom sheet setelah menyimpan
                       } else {
                         Get.snackbar(
                           "Error",
-                          "PIN tidak boleh kosong!",
+                          "PIN harus terdiri dari 6 angka!",
                           backgroundColor: Colors.blue,
                           colorText: Colors.white,
                         );
@@ -443,7 +448,8 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEditPasswordBottomSheet(BuildContext context, ProfileController controller) {
+  // Fungsi untuk menampilkan pop-up dari bawah untuk edit password
+  void _showEditPasswordBottomSheet(BuildContext context, ProfilenullController controller) {
     TextEditingController passwordController = TextEditingController(text: controller.password.value);
 
     showModalBottomSheet(
@@ -471,11 +477,11 @@ class _ProfileViewState extends State<ProfileView> {
               SizedBox(height: 16.0),
               TextField(
                 controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Password",
                   border: OutlineInputBorder(),
                 ),
-                obscureText: true,
               ),
               SizedBox(height: 16.0),
               Row(
@@ -483,23 +489,23 @@ class _ProfileViewState extends State<ProfileView> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      controller.deletePassword(); // Menghapus password
+                      controller.deletePassword();
                       Get.back(); // Tutup bottom sheet setelah aksi
                     },
                     child: Text("Hapus"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Ubah warna tombol Hapus
+                      backgroundColor: Colors.blue,
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (passwordController.text.isNotEmpty) {
+                      if (passwordController.text.isNotEmpty && passwordController.text.length >= 6) {
                         controller.editPassword(passwordController.text); // Memperbarui password
                         Get.back(); // Tutup bottom sheet setelah menyimpan
                       } else {
                         Get.snackbar(
                           "Error",
-                          "Password tidak boleh kosong!",
+                          "Password minimal 6 karakter!",
                           backgroundColor: Colors.blue,
                           colorText: Colors.white,
                         );
@@ -516,7 +522,7 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 }
-
+// Halaman Placeholder untuk Home, Statistik, dan Berita
 class PemasukanMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -543,4 +549,4 @@ class ProfileMainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(child: Text("Profile Main View"));
   }
-  }
+}

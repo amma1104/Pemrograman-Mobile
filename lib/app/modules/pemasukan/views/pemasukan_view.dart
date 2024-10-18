@@ -17,13 +17,21 @@ class _PemasukanViewState extends State<PemasukanView> {
   final List<Widget> _pages = [
     PemasukanMainView(),  // Halaman Pemasukan
     StatistikView(),      // Halaman Statistik
-    BeritaView(),         // Halaman Berita
+    NewsView(),         // Halaman Berita
     ProfilView(),         // Halaman Profil
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Update the selected index
+
+      // Navigate to Pemasukan when Home (index 0) is pressed
+      if (index == 0) {
+        Get.toNamed(AppRoutes.pemasukan); // Change this route to your PemasukanView route
+      }
+      if (index == 2) {
+        Get.toNamed(AppRoutes.berita);
+      }
       // If the "Profil" tab is selected, navigate to ProfilView
       if (index == 3) {
         Get.toNamed(AppRoutes.profile);
@@ -393,7 +401,7 @@ class StatistikView extends StatelessWidget {
   }
 }
 
-class BeritaView extends StatelessWidget {
+class NewsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Berita'));

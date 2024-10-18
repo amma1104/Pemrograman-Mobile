@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:tugasteori1/app/modules/profile/controllers/profile_controllers.dart';
+import 'package:tugasteori1/app/modules/profile/controllers/profile_controller.dart';
 
 class ProfileBinding extends Bindings {
   @override

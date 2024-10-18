@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tugasteori1/app/modules/home/controllers/home_controller.dart';
 import 'package:tugasteori1/app/routes/app_routes.dart';
 
@@ -7,23 +9,72 @@ class HomeView extends GetView<HomeController> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Firebase Auth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Local Notifications instance
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  // Initialize the notifications
+  Future<void> initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+    InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    // No longer passing onSelectNotification here
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      // You may need to handle notifications in your app lifecycle.
+    );
+  }
+
+  // Show notification function for foreground
+  Future<void> showNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _flutterLocalNotificationsPlugin.show(
+      0,
+      'Login Berhasil',
+      'Anda telah berhasil login ke aplikasi',
+      platformChannelSpecifics,
+      payload: 'Notification Payload',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    initializeNotifications(); // Initialize notifications when the widget is built
+
     return Scaffold(
       body: Stack(
         children: [
           // Blue background
           Container(
-            color: Colors.blue, // Background color
+            color: Colors.blue,
           ),
-
+          // Positioned Image
           Positioned(
-            top: 100, // Position image closer to the bottom
+            top: 100,
             left: 0,
             right: 0,
             child: Image.asset(
-              'lib/img.png', // Replace with correct asset path
-              height: 500, // Adjust the height if needed
+              'lib/img.png', // Ensure this path is correct
+              height: 500,
               fit: BoxFit.contain,
             ),
           ),
@@ -32,7 +83,7 @@ class HomeView extends GetView<HomeController> {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.5, // Adjusted height for more buttons
+              height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -59,16 +110,15 @@ class HomeView extends GetView<HomeController> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 20),
-
                   // Login Button
                   SizedBox(
-                    width: 200, // Ensures all buttons are the same width
+                    width: 200,
                     child: ElevatedButton(
                       onPressed: () {
-                        _showLoginModal(context); // Show pop-up login modal
+                        _showLoginModal(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 15), // Same height for all buttons
+                        padding: EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -80,25 +130,23 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40),
-
-                  // Ayo Mulai Button
+                  SizedBox(height: 20),
+                  // Register Button
                   SizedBox(
-                    width: 250, // Ensures all buttons are the same width
+                    width: 200,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(AppRoutes.pemasukannull);
-                        // Navigate to PemasukanNull page
+                        _showRegisterModal(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 15), // Same height for all buttons
+                        padding: EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                         backgroundColor: Colors.blue,
                       ),
                       child: Text(
-                        "Ayo Mulai!!!",
+                        "Register",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
@@ -112,34 +160,34 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // Function to show the login modal pop-up
+  // Function to show the login modal
   void _showLoginModal(BuildContext context) {
-    // Automatically open the keyboard when the pop-up appears
-    FocusScope.of(context).requestFocus(FocusNode());
+    _emailController.clear();
+    _passwordController.clear();
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Ensures the modal can be scrolled
-      backgroundColor: Colors.white, // Sets background of the modal to white
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
-            left: 20,
-            right: 20,
-            top: 20,
-          ),
-          child: SingleChildScrollView( // Ensure content can be scrolled when keyboard is visible
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Email input field
+                // Email input
                 TextField(
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress, // Ensures correct input type for email
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: "Email",
                     hintText: "example@gmail.com",
@@ -148,14 +196,13 @@ class HomeView extends GetView<HomeController> {
                     ),
                     prefixIcon: Icon(Icons.email),
                   ),
-                  autofocus: true, // Automatically focuses the email input field
+                  autofocus: true,
                 ),
                 SizedBox(height: 20),
-
-                // Password input field
+                // Password input
                 TextField(
                   controller: _passwordController,
-                  obscureText: true, // Hides the password
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
                     hintText: "Enter your password",
@@ -166,61 +213,140 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ),
                 SizedBox(height: 20),
-
-                // OK button, will move up when keyboard shows
+                // OK Button
                 SizedBox(
-                  width: double.infinity, // Button takes the full width
+                  width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      String email = _emailController.text;
-                      String password = _passwordController.text;
-
-                      // Check if email ends with "@gmail.com"
-                      if (!email.endsWith("@gmail.com")) {
-                        Get.snackbar(
-                          "Error",
-                          "Email harus menggunakan domain @gmail.com!",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
+                    onPressed: () async {
+                      String email = _emailController.text.trim();
+                      String password = _passwordController.text.trim();
+                      if (email.isEmpty || password.isEmpty) {
+                        Get.snackbar("Error", "Email and password cannot be empty!",
+                            backgroundColor: Colors.red, colorText: Colors.white);
                         return;
                       }
-
-                      // Check if password is at least 8 characters long
-                      if (password.length < 8) {
-                        Get.snackbar(
-                          "Error",
-                          "Password harus minimal 8 karakter!",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
+                      try {
+                        await _auth.signInWithEmailAndPassword(
+                          email: email,
+                          password: password,
                         );
-                        return;
-                      }
-
-                      if (email.isNotEmpty && password.isNotEmpty) {
-                        // Perform login logic here, such as checking credentials
-                        print("Email: $email, Password: $password");
-                        Navigator.pop(context); // Close the modal
-                        Get.toNamed(AppRoutes.pemasukan); // Navigate to the Pemasukan page
-                      } else {
-                        // Show error message
-                        Get.snackbar(
-                          "Error",
-                          "Email dan password harus diisi!",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
+                        Navigator.pop(context);
+                        // Show notification when login is successful
+                        await showNotification();
+                        Get.toNamed(AppRoutes.pemasukan);
+                      } catch (e) {
+                        Get.snackbar("Login Failed", e.toString(),
+                            backgroundColor: Colors.red, colorText: Colors.white);
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 15), // Button height
+                      padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       backgroundColor: Colors.blue,
                     ),
                     child: Text(
-                      "OK",
+                      "Login",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Function to show the register modal
+  void _showRegisterModal(BuildContext context) {
+    _emailController.clear();
+    _passwordController.clear();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Email input
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    hintText: "example@gmail.com",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  autofocus: true,
+                ),
+                SizedBox(height: 20),
+                // Password input
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    hintText: "Enter your password",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.lock),
+                  ),
+                ),
+                SizedBox(height: 20),
+                // OK Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      String email = _emailController.text.trim();
+                      String password = _passwordController.text.trim();
+                      if (email.isEmpty || password.isEmpty) {
+                        Get.snackbar("Error", "Email and password cannot be empty!",
+                            backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+                      try {
+                        await _auth.createUserWithEmailAndPassword(
+                          email: email,
+                          password: password,
+                        );
+                        Navigator.pop(context);
+                        Get.snackbar("Register Success", "Account created successfully!",
+                            backgroundColor: Colors.green, colorText: Colors.white);
+                      } catch (e) {
+                        Get.snackbar("Register Failed", e.toString(),
+                            backgroundColor: Colors.red, colorText: Colors.white);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: Text(
+                      "Register",
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),

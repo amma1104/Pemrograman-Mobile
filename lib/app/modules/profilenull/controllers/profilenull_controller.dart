@@ -1,6 +1,11 @@
 import 'package:get/get.dart';
 
-class ProfileController extends GetxController {
+class ProfilenullController extends GetxController {
+  RxString currentSection = 'main'.obs;
+
+  void switchToSection(String section) {
+    currentSection.value = section;
+  }
   var name = ''.obs;
   var email = ''.obs;
   var language = ''.obs;
